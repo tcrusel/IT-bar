@@ -1,4 +1,6 @@
-# Concept
+#IT bar
+
+## Concept
 
 L'IT bar est un site communautaire permettant à des passionnés d'informatique, professionnel ou amateur de se rencontrer pour échanger autour des sujets d'informatique dans un cadre convivial. La communauté est composée de 2 types de profil : 
 
@@ -22,7 +24,7 @@ Pour apparaitre dans la page dédiée aux intervenants, renseigner le fichier JS
 * `contacts`: mail et/ou twitter `mail, twitter`
 
 
-### Crédits :
+## Crédits :
 - Thomas C
 - Marcel ZH
 - Aedan H
