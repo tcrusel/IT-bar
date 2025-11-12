@@ -1,0 +1,88 @@
+name: CI & Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node (outillage CI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Qualité (lint) — étape "Build" du pipeline
+      - name: Lint HTML
+        run: npx --yes htmlhint "src/**/*.html"
+
+      - name: Lint JS (ESLint recommandé)
+        run: |
+          echo '{ "env": { "browser": true, "es2021": true }, "extends": "eslint:recommended" }' > .eslintrc.json
+          npx --yes eslint "src/**/*.js"
+
+      # Build reproductible : minification + packaging
+      - name: Build (minify + copie)
+        run: |
+          rm -rf public-site
+          mkdir -p public-site
+          npx --yes html-minifier-terser \
+            --collapse-whitespace --remove-comments --minify-css true --minify-js true \
+            -o public-site/index.html src/index.html
+          npx --yes terser src/registers.js -o public-site/registers.js -c -m
+          touch public-site/.nojekyll
+
+      # Tests fonctionnels minimaux : liens cassés (smoke-ish)
+      - name: Link check
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --verbose --no-progress public-site/**/*.html
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Artefact de build (contrat vers l’étape de déploiement)
+      - name: Upload artifact for Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public-site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  smoke-test:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Smoke test (HTTP 200/301)
+        env:
+          URL: ${{ needs.deploy.outputs.page_url }}
+        run: |
+          for i in {1..10}; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+            if [ "$code" = "200" ] || [ "$code" = "301" ]; then exit 0; fi
+            sleep 3
+          done
+          echo "Site non accessible (pas 200/301)"; exit 1
