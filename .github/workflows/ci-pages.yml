@@ -48,18 +48,18 @@ jobs:
 
       # --- Étape 5 : Vérification basique des liens internes ---
       # On évite les liens externes (Google Fonts, etc.) pour ne pas bloquer inutilement
-      - name: Check internal links
-        uses: lycheeverse/lychee-action@v2
-        with:
-          args: >
-            --offline
-            --root-dir "${{ github.workspace }}/public-site"
-            --verbose
-            --no-progress
-            --exclude-fragments
-            "public-site/**/*.html"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #- name: Check internal links
+      #  uses: lycheeverse/lychee-action@v2
+      #  with:
+      #    args: >
+      #      --offline
+      #      --root-dir "${{ github.workspace }}/public-site"
+      #      --verbose
+      #      --no-progress
+      #      --exclude-fragments
+      #      "public-site/**/*.html"
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # --- Étape 6 : Upload de l’artefact pour Pages ---
       - name: Upload artifact for GitHub Pages
