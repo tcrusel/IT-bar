@@ -56,7 +56,7 @@ jobs:
             --root-dir "${{ github.workspace }}/public-site"
             --verbose
             --no-progress
-            --include-fragments
+            --exclude-fragments
             "public-site/**/*.html"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
