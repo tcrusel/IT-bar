@@ -51,9 +51,19 @@ jobs:
       - name: Check internal links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --offline --base public-site --verbose --no-progress public-site/**/*.html --include-fragments --exclude-mail
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # --offline : ne contacte pas Internet (ignore Google Fonts, CDN, etc.)
+    # --root-dir : répertoire racine pour résoudre les liens racine/relatifs
+    # Le chemin absolu évite tout souci de résolution
+          args: >
+            --offline
+            --root-dir "${{ github.workspace }}/public-site"
+            --verbose
+            --no-progress
+            --include-fragments
+            --exclude-mail
+            "public-site/**/*.html"
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # --- Étape 6 : Upload de l’artefact pour Pages ---
       - name: Upload artifact for GitHub Pages
