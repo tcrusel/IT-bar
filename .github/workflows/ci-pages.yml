@@ -19,25 +19,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node (outillage CI)
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # Qualité (lint) — étape "Build" du pipeline
-      - name: Lint HTML
+      # Lint HTML
+      - name: Lint HTML files
         run: npx --yes htmlhint "src/**/*.html"
 
-      - name: Lint JS (ESLint recommandé)
+      # Lint JS
+      - name: Lint JS files
         run: |
           echo '{ "env": { "browser": true, "es2021": true }, "extends": "eslint:recommended" }' > .eslintrc.json
           npx --yes eslint "src/**/*.js"
 
-      # Build reproductible : minification + packaging
-      - name: Build (minify + copie)
+      # Build (minify)
+      - name: Build static site (minify)
         run: |
           rm -rf public-site
           mkdir -p public-site
@@ -47,16 +48,16 @@ jobs:
           npx --yes terser src/registers.js -o public-site/registers.js -c -m
           touch public-site/.nojekyll
 
-      # Tests fonctionnels minimaux : liens cassés (smoke-ish)
-      - name: Link check
+      # Test des liens
+      - name: Check broken links
         uses: lycheeverse/lychee-action@v2
         with:
           args: --verbose --no-progress public-site/**/*.html
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Artefact de build (contrat vers l’étape de déploiement)
-      - name: Upload artifact for Pages
+      # Upload artifact pour Pages
+      - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: public-site
@@ -76,13 +77,19 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Smoke test (HTTP 200/301)
+      - name: Smoke test (ensure site is up)
         env:
           URL: ${{ needs.deploy.outputs.page_url }}
         run: |
+          echo "Testing $URL ..."
           for i in {1..10}; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
-            if [ "$code" = "200" ] || [ "$code" = "301" ]; then exit 0; fi
+            if [ "$code" = "200" ] || [ "$code" = "301" ]; then
+              echo "✅ Site accessible ($code)"
+              exit 0
+            fi
+            echo "⏳ Tentative $i..."
             sleep 3
           done
-          echo "Site non accessible (pas 200/301)"; exit 1
+          echo "❌ Le site ne répond pas (code $code)"
+          exit 1
