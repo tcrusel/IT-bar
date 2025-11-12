@@ -1,4 +1,4 @@
-const registers = [
+window.registers = [
   {
     since: "2025-05-15",
     name: "Alex Doe",
