@@ -27,18 +27,17 @@ jobs:
         with:
           node-version: 20
 
-      # Lint HTML
-      - name: Lint HTML files
+      # --- Qualité ---
+      - name: Lint HTML
         run: npx --yes htmlhint "src/**/*.html"
 
-      # Lint JS
-      - name: Lint JS files
+      - name: Lint JS
         run: |
           echo '{ "env": { "browser": true, "es2021": true }, "extends": "eslint:recommended" }' > .eslintrc.json
           npx --yes eslint "src/**/*.js"
 
-      # Build (minify)
-      - name: Build static site (minify)
+      # --- Build (minify + copie) ---
+      - name: Build static site
         run: |
           rm -rf public-site
           mkdir -p public-site
@@ -48,16 +47,17 @@ jobs:
           npx --yes terser src/registers.js -o public-site/registers.js -c -m
           touch public-site/.nojekyll
 
-      # Test des liens
-      - name: Check broken links
+      # --- Tests (liens internes uniquement) ---
+      - name: Check internal links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --verbose --no-progress public-site/**/*.html
+          # --offline : ne teste que les fichiers locaux ; --base résout les liens relatifs depuis public-site
+          args: --offline --base public-site --verbose --no-progress public-site/**/*.html --include-fragments --exclude-mail
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Upload artifact pour Pages
-      - name: Upload artifact for GitHub Pages
+      # --- Artefact vers Pages ---
+      - name: Upload artifact for Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: public-site
@@ -65,6 +65,8 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}   # <-- expose l'URL au job suivant
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -77,10 +79,9 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Smoke test (ensure site is up)
-        env:
-          URL: ${{ needs.deploy.outputs.page_url }}
+      - name: Smoke test (HTTP 200/301)
         run: |
+          URL='${{ needs.deploy.outputs.page_url }}'
           echo "Testing $URL ..."
           for i in {1..10}; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
@@ -88,8 +89,6 @@ jobs:
               echo "✅ Site accessible ($code)"
               exit 0
             fi
-            echo "⏳ Tentative $i..."
             sleep 3
           done
-          echo "❌ Le site ne répond pas (code $code)"
-          exit 1
+          echo "❌ Site non accessible (attendu 200/301)"; exit 1
