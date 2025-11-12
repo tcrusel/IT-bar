@@ -53,10 +53,9 @@ jobs:
         with:
           args: >
             --offline
-            --root-dir "${{ github.workspace }}/public-site"
+            --root-dir "./public-site"
             --verbose
             --no-progress
-            --exclude-fragments
             "public-site/**/*.html"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
