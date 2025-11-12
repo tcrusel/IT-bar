@@ -1,12 +1,14 @@
-# Concept
+# IT bar
+
+## Concept
 
 L'IT bar est un site communautaire permettant à des passionnés d'informatique, professionnel ou amateur de se rencontrer pour échanger autour des sujets d'informatique dans un cadre convivial. La communauté est composée de 2 types de profil : 
 
 - Ceux qui souhaitent partager leur connaissance
 - Ceux qui souhaitent élargir leur connaissance
 
-
 Pour ajouter votre profil sur le site, veuillez faire une demande de Pull sur le fichier ```register.js```.
+
 
 ## Communauté des intervenants
 
@@ -14,15 +16,15 @@ Pour apparaitre dans la page dédiée aux intervenants, renseigner le fichier JS
 
 **infos obligatoires :**
 
-* `depuis`: la date actuelle, sous le format `jj-mm-aaaa`
-* `nom`: nom complet `nom prénom`
+* `since`: la date actuelle, sous le format `aaaa-mm-jj`
+* `name`: nom complet `nom prénom`
 * `bio`: présentez vous
-* `image`: lien vers une photo de profil.
-* `villes`: une liste des villes où vous voulez apparaître. `ville1, ville2, ...`
-* `contacts`: mail et/ou LinkedIn `mail, linkedin`
+* `picture`: lien vers une photo de profil.
+* `cities`: une liste des villes où vous voulez apparaître. `ville1, ville2, ...`
+* `contacts`: mail et/ou twitter `mail, twitter`
 
 
-### Crédits :
+## Crédits :
 - Thomas C
 - Marcel ZH
 - Aedan H

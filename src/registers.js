@@ -1,0 +1,35 @@
+const registers = [
+  {
+    since: "2025-05-15",
+    name: "Alex Doe",
+    bio: "Frontend developer with a passion for Vue.js and creative coding. Looking to connect with fellow devs interested in building beautiful and interactive web experiences. Let's grab a beer and talk about the future of the web!",
+    picture: "https://lh3.googleusercontent.com/aida-public/AB6AXuDnEy-FYEoUbexxCHZWg5A7MfIz7IiLgSyZjX64O4iGBscBebTkwtyqzpNVJFDwhVcCda-HpqYIhLMLaYYsEEngGWhT8EE3ZjTz7AUvV6tHFvCXNxfSCcYrSp0by-OMwLujFRpFsI6RRgFWlaec1t4ghA1rEBKJ7bN45bR5ysUz9ja_LZjrSDgKBWhn5xB-gVNk_x14ubg_xf5hcpYKLZ8jIoKJuo16MhqRPpeui6KYkUVfS1XbyUXoT3W20hOEJXeuShdk5Qqt4ToI",
+    cities: ["Paris", "Bordeaux", "Mérignac"],
+    contacts: {
+      twitter: "@alexdoe",
+      mail: "doe.alex@outlook.com",
+    },
+  },
+  {
+    since: "2025-04-05",
+    name: "Jane Smith",
+    bio: "DevOps engineer fascinated by cloud infrastructure and automation. I'm always down for a good conversation about Docker, Kubernetes, and CI/CD pipelines. Let's discuss how to build resilient systems over a pint.",
+    picture: "https://lh3.googleusercontent.com/aida-public/AB6AXuCf0s4GcSDDlOOcNUjJmJYzg4UflM1xEprcauwMWGqQC4I5pc97fK7Odsf8WzT_7UfPijg7RIJE1fuO5d1o2SGNdcjW0RZhcldGcckjDJ9mAY1vNlQxHVi9D0OTkrRfR9BW_0oy4_2GtOZWIgbq25Big7TP6gsNUowvDLITBaQ0dxLBLa9pt3P4HZPMthcCWPLC2J4YIVnRa7HSoH2373YNNMNaQ1h9ATWLrBAEGlUCJP8x3ap_WcjBqiiE_CpcRFYmhhlOuEH2lqyl",
+    cities: ["Marseille", "Nice"],
+    contacts: {
+      twitter: "@janesmith",
+      mail: "jane.smith@gmail.com",
+    },
+  },
+  {
+    since: "2025-09-22",
+    name: "Sam Wilson",
+    bio: "Full-stack developer with expertise in Node.js and React. Interested in meeting people to chat about building scalable applications, serverless architectures, and the JAMstack. Happy to share my experiences and learn from others.",
+    picture: "https://lh3.googleusercontent.com/aida-public/AB6AXuCR_xouCPPGQSKSR-KSEaBJ1NSuYHwfWOMhzTkdEL9B0i5YC_sRN8smeUehucMRrCktKl3bncWqAu82waaWIIbDKap-hPj5hxQi9m13ribqJ46OrH8Nf3oH6KZYbuAqcsukL1EB-RYN9nogsABTE-1_beuz7tF6voh595WcIYSHsbhh7ZOISbttpw04oqK8E8tuwEs3cagTqRCznQ6xF8yrwSPOIOpABnZ4fTkLj89e62Gj5z2jnv2Klp6TrtPCPgoTxlBdLqMSoZyv",
+    cities: ["Strasbourg", "Lyon", "Mulhouse"],
+    contacts: {
+      twitter: "@samwilson",
+      mail: "sam@wilson.net",
+    },
+  },
+]
