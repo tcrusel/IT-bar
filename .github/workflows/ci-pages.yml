@@ -2,9 +2,9 @@ name: CI & Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ]          # Déclenchement sur main
   pull_request:
-  workflow_dispatch:
+  workflow_dispatch:              # Exécution manuelle possible
 
 permissions:
   contents: read
@@ -17,71 +17,72 @@ concurrency:
 
 jobs:
   build:
+    name: Build & Validate
     runs-on: ubuntu-latest
+
     steps:
+      # --- Étape 1 : Récupération du code source ---
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # --- Étape 2 : Préparation de Node.js ---
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # --- Qualité ---
-      - name: Lint HTML
-        run: npx --yes htmlhint "src/**/*.html"
-
-      - name: Lint JS
+      # --- Étape 3 : Vérification du JSON ---
+      # Vérifie que src/registers.json est bien formé (empêche les erreurs de syntaxe)
+      - name: Validate registers.json syntax
         run: |
-          echo '{ "env": { "browser": true, "es2021": true }, "extends": "eslint:recommended" }' > .eslintrc.json
-          npx --yes eslint "src/**/*.js"
+          echo "Validating JSON syntax..."
+          node -e "JSON.parse(require('fs').readFileSync('src/registers.json', 'utf8')); console.log('✅ registers.json is valid');"
 
-      # --- Build (minify + copie) ---
-      - name: Build static site
+      # --- Étape 4 : Génération automatique du site ---
+      - name: Generate static HTML from JSON
         run: |
           rm -rf public-site
           mkdir -p public-site
-          npx --yes html-minifier-terser \
-            --collapse-whitespace --remove-comments --minify-css true --minify-js true \
-            -o public-site/index.html src/index.html
-          npx --yes terser src/registers.js -o public-site/registers.js -c -m
+          node build.js
           touch public-site/.nojekyll
 
-      # --- Tests (liens internes uniquement) ---
+      # --- Étape 5 : Vérification basique des liens internes ---
+      # On évite les liens externes (Google Fonts, etc.) pour ne pas bloquer inutilement
       - name: Check internal links
         uses: lycheeverse/lychee-action@v2
         with:
-          # --offline : ne teste que les fichiers locaux ; --base résout les liens relatifs depuis public-site
           args: --offline --base public-site --verbose --no-progress public-site/**/*.html --include-fragments --exclude-mail
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # --- Artefact vers Pages ---
-      - name: Upload artifact for Pages
+      # --- Étape 6 : Upload de l’artefact pour Pages ---
+      - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: public-site
 
   deploy:
+    name: Deploy to GitHub Pages
     needs: build
     runs-on: ubuntu-latest
-    outputs:
-      page_url: ${{ steps.deployment.outputs.page_url }}   # <-- expose l'URL au job suivant
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy site
         id: deployment
         uses: actions/deploy-pages@v4
 
   smoke-test:
+    name: Smoke test (after deploy)
     needs: deploy
     runs-on: ubuntu-latest
+
     steps:
-      - name: Smoke test (HTTP 200/301)
+      - name: Wait for Pages to propagate and test
         run: |
-          URL='${{ needs.deploy.outputs.page_url }}'
+          URL="${{ needs.deploy.outputs.page_url }}"
           echo "Testing $URL ..."
           for i in {1..10}; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
@@ -89,6 +90,8 @@ jobs:
               echo "✅ Site accessible ($code)"
               exit 0
             fi
+            echo "⏳ Attempt $i..."
             sleep 3
           done
-          echo "❌ Site non accessible (attendu 200/301)"; exit 1
+          echo "❌ Site not reachable (expected 200/301)"
+          exit 1
