@@ -24,7 +24,6 @@ const cardsHTML = registers
           <img alt="${person.name}'s avatar" class="w-16 h-16 rounded-full object-cover" src="${person.picture}" />
           <div>
             <h3 class="text-xl font-bold text-white">${person.name}</h3>
-            <p class="text-primary">${person.contacts.twitter}</p>
           </div>
         </div>
         <p class="text-slate-400">${person.bio}</p>
@@ -33,9 +32,6 @@ const cardsHTML = registers
           <div class="flex items-center gap-3">
             <a class="text-slate-400 hover:text-primary" href="mailto:${person.contacts.mail}">
               <span class="material-symbols-outlined">email</span>
-            </a>
-            <a class="text-slate-400 hover:text-primary" href="#">
-              <span class="material-symbols-outlined">link</span>
             </a>
           </div>
         </div>
