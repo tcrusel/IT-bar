@@ -1,14 +1,10 @@
-// build.js — version complète de la page, avec toutes les sections du HTML d'origine
-
 import fs from "fs";
 import path from "path";
 
-// --- Chemins d'E/S ---
 const registersPath = path.join("src", "registers.json");
 const outDir = "public-site";
 const outFile = path.join(outDir, "index.html");
 
-// --- Utilitaires ---
 const escapeHTML = (str = "") =>
   String(str)
     .replace(/&/g, "&amp;")
@@ -20,13 +16,6 @@ const escapeHTML = (str = "") =>
 const get = (obj, pathStr, fallback = "") =>
   pathStr.split(".").reduce((acc, k) => (acc && acc[k] != null ? acc[k] : null), obj) ?? fallback;
 
-const twitterToLink = (tw = "") => {
-  if (!tw) return "";
-  const handle = tw.trim().replace(/^@/, "");
-  return `https://twitter.com/${handle}`;
-};
-
-// --- Lecture du JSON de participants ---
 let registers = [];
 try {
   registers = JSON.parse(fs.readFileSync(registersPath, "utf-8"));
@@ -36,27 +25,17 @@ try {
   process.exit(1);
 }
 
-// --- Génération des cartes HTML à partir du JSON ---
 const cardsHTML = registers
   .map((person) => {
     const name = escapeHTML(get(person, "name", "Anonymous"));
     const bio = escapeHTML(get(person, "bio", "No bio provided."));
     const picture = escapeHTML(get(person, "picture", "https://via.placeholder.com/96"));
     const mail = escapeHTML(get(person, "contacts.mail", ""));
-    const twitterRaw = get(person, "contacts.twitter", "");
-    const twitterText = escapeHTML(twitterRaw);
-    const twitterHref = twitterToLink(twitterRaw);
 
     const emailLink =
       mail &&
       `<a class="text-slate-400 hover:text-primary" href="mailto:${mail}">
          <span class="material-symbols-outlined">email</span>
-       </a>`;
-
-    const webLink =
-      twitterHref &&
-      `<a class="text-slate-400 hover:text-primary" href="${twitterHref}" target="_blank" rel="noopener noreferrer">
-         <span class="material-symbols-outlined">link</span>
        </a>`;
 
     const contactIcons = [emailLink, webLink].filter(Boolean).join("\n") ||
@@ -68,7 +47,6 @@ const cardsHTML = registers
           <img alt="${name}'s avatar" class="w-16 h-16 rounded-full object-cover" src="${picture}" />
           <div>
             <h3 class="text-xl font-bold text-white">${name}</h3>
-            ${twitterText ? `<p class="text-primary">${twitterText}</p>` : ""}
           </div>
         </div>
         <p class="text-slate-400">${bio}</p>
