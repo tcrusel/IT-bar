@@ -5,7 +5,6 @@ const registersPath = path.join("src", "registers.json");
 const outDir = "public-site";
 const outFile = path.join(outDir, "index.html");
 
-// Lecture du JSON de participants
 let registers = [];
 try {
   registers = JSON.parse(fs.readFileSync(registersPath, "utf-8"));
@@ -15,7 +14,6 @@ try {
   process.exit(1);
 }
 
-// Génération des cartes HTML à partir du JSON
 const cardsHTML = registers
   .map(
     (person) => `
@@ -39,7 +37,6 @@ const cardsHTML = registers
   )
   .join("\n");
 
-// HTML principal
 const htmlContent = `
 <!DOCTYPE html>
 <html class="dark" lang="en">
@@ -119,7 +116,6 @@ const htmlContent = `
 </html>
 `;
 
-// Création du dossier et écriture
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(outFile, htmlContent);
 
