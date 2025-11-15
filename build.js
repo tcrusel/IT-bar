@@ -16,6 +16,7 @@ const escapeHTML = (str = "") =>
 const get = (obj, pathStr, fallback = "") =>
   pathStr.split(".").reduce((acc, k) => (acc && acc[k] != null ? acc[k] : null), obj) ?? fallback;
 
+
 let registers = [];
 try {
   registers = JSON.parse(fs.readFileSync(registersPath, "utf-8"));
@@ -65,6 +66,7 @@ const cardsHTML = registers
             <a class="text-slate-400 hover:text-primary" href="mailto:${person.contacts.mail}">
               <span class="material-symbols-outlined">email</span>
             </a>
+            ${contactIcons}
           </div>
         </div>
       </div>`;
