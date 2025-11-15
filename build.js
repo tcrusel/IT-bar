@@ -214,7 +214,7 @@ const htmlContent = `<!DOCTYPE html>
                 </p>
                 <a
                   class="mt-8 inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-lg font-bold text-white transition-colors hover:bg-primary/80"
-                  href="https://github.com/your-repo/registers.json"
+                  href="https://github.com/tcrusel/IT-bar/blob/dev/src/registers.json"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
