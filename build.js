@@ -16,6 +16,7 @@ const escapeHTML = (str = "") =>
 const get = (obj, pathStr, fallback = "") =>
   pathStr.split(".").reduce((acc, k) => (acc && acc[k] != null ? acc[k] : null), obj) ?? fallback;
 
+
 let registers = [];
 try {
   registers = JSON.parse(fs.readFileSync(registersPath, "utf-8"));
@@ -53,6 +54,9 @@ const cardsHTML = registers
         <div class="mt-auto pt-4 border-t border-slate-800 flex items-center justify-between">
           <span class="text-sm text-slate-500">Contact:</span>
           <div class="flex items-center gap-3">
+            <a class="text-slate-400 hover:text-primary" href="mailto:${person.contacts.mail}">
+              <span class="material-symbols-outlined">email</span>
+            </a>
             ${contactIcons}
           </div>
         </div>
@@ -60,8 +64,8 @@ const cardsHTML = registers
   })
   .join("\n");
 
-// --- HTML principal (reprend la structure originale complète) ---
-const htmlContent = `<!DOCTYPE html>
+const htmlContent = `
+<!DOCTYPE html>
 <html class="dark" lang="en">
   <head>
     <meta charset="utf-8" />
@@ -249,7 +253,6 @@ const htmlContent = `<!DOCTYPE html>
   </body>
 </html>`;
 
-// --- Création du dossier et écriture ---
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(outFile, htmlContent);
 
