@@ -54,9 +54,6 @@ const cardsHTML = registers
         <div class="mt-auto pt-4 border-t border-slate-800 flex items-center justify-between">
           <span class="text-sm text-slate-500">Contact:</span>
           <div class="flex items-center gap-3">
-            <a class="text-slate-400 hover:text-primary" href="mailto:${person.contacts.mail}">
-              <span class="material-symbols-outlined">email</span>
-            </a>
             ${contactIcons}
           </div>
         </div>
