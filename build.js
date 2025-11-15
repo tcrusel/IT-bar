@@ -1,14 +1,10 @@
-// build.js — version complète de la page, avec toutes les sections du HTML d'origine
-
 import fs from "fs";
 import path from "path";
 
-// --- Chemins d'E/S ---
 const registersPath = path.join("src", "registers.json");
 const outDir = "public-site";
 const outFile = path.join(outDir, "index.html");
 
-// --- Utilitaires ---
 const escapeHTML = (str = "") =>
   String(str)
     .replace(/&/g, "&amp;")
@@ -20,13 +16,7 @@ const escapeHTML = (str = "") =>
 const get = (obj, pathStr, fallback = "") =>
   pathStr.split(".").reduce((acc, k) => (acc && acc[k] != null ? acc[k] : null), obj) ?? fallback;
 
-const twitterToLink = (tw = "") => {
-  if (!tw) return "";
-  const handle = tw.trim().replace(/^@/, "");
-  return `https://twitter.com/${handle}`;
-};
 
-// --- Lecture du JSON de participants ---
 let registers = [];
 try {
   registers = JSON.parse(fs.readFileSync(registersPath, "utf-8"));
@@ -36,7 +26,6 @@ try {
   process.exit(1);
 }
 
-// --- Génération des cartes HTML à partir du JSON ---
 const cardsHTML = registers
   .map((person) => {
     const name = escapeHTML(get(person, "name", "Anonymous"));
@@ -67,14 +56,16 @@ const cardsHTML = registers
         <div class="flex items-center gap-4">
           <img alt="${name}'s avatar" class="w-16 h-16 rounded-full object-cover" src="${picture}" />
           <div>
-            <h3 class="text-xl font-bold text-white">${name}</h3>
-            ${twitterText ? `<p class="text-primary">${twitterText}</p>` : ""}
+            <h3 class="text-xl font-bold text-white">${person.name}</h3>
           </div>
         </div>
         <p class="text-slate-400">${bio}</p>
         <div class="mt-auto pt-4 border-t border-slate-800 flex items-center justify-between">
           <span class="text-sm text-slate-500">Contact:</span>
           <div class="flex items-center gap-3">
+            <a class="text-slate-400 hover:text-primary" href="mailto:${person.contacts.mail}">
+              <span class="material-symbols-outlined">email</span>
+            </a>
             ${contactIcons}
           </div>
         </div>
@@ -82,8 +73,8 @@ const cardsHTML = registers
   })
   .join("\n");
 
-// --- HTML principal (reprend la structure originale complète) ---
-const htmlContent = `<!DOCTYPE html>
+const htmlContent = `
+<!DOCTYPE html>
 <html class="dark" lang="en">
   <head>
     <meta charset="utf-8" />
@@ -271,7 +262,6 @@ const htmlContent = `<!DOCTYPE html>
   </body>
 </html>`;
 
-// --- Création du dossier et écriture ---
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(outFile, htmlContent);
 
