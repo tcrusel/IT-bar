@@ -39,7 +39,7 @@ const cardsHTML = registers
          <span class="material-symbols-outlined">email</span>
        </a>`;
 
-    const contactIcons = [emailLink, webLink].filter(Boolean).join("\n") ||
+    const contactIcons = [emailLink].filter(Boolean).join("\n") ||
       `<span class="text-slate-500 text-sm">No contacts</span>`;
 
     return `
